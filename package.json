@@ -1,0 +1,19 @@
+{
+  "name": "website-building-platform",
+  "version": "1.0.0",
+  "description": "A platform for renting Dockerized Ghost instances with a Django backend and jQuery frontend.",
+  "main": "frontend/index.html",
+  "scripts": {
+    "start": "live-server frontend",
+    "build": "echo 'Build process for frontend'",
+    "test": "echo 'Running tests'"
+  },
+  "dependencies": {
+    "jquery": "^3.6.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}

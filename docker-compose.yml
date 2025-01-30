@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  django-backend:
+    build: ./backend
+    container_name: django-backend
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_CORS_ALLOWED_ORIGINS=https://www.sandbox.paypal.com https://www.paypal.com
+
+  ghost-instance:
+    build: ./ghost
+    container_name: ghost-instance
+    environment:
+      - url=http://localhost:2368
+    ports:
+      - "2368:2368"
+    volumes:
+      - ghost_data:/var/lib/ghost/content
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    command: >
+      sh -c "npm install &&
+             npm start"
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NGINX_CORS_ORIGINS=https://www.sandbox.paypal.com https://www.paypal.com
+
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  ghost_data:
+  postgres_data:

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Building Platform</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Replace Stripe with PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AY4CZZ1hhyDwYszHx-h28orO9RaGscf1qScWiePW-R-C3LsXKYSl6O-2oe-SMK5Rl6aVbcE4zqWi-00C&currency=USD&components=buttons&debug=true"></script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Website Building Platform</h1>
+    </header>
+    <main>
+        <section id="rent-ghost">
+            <h2>Rent a Ghost Instance</h2>
+            <form id="rent-form" method="post">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <label for="instance-name">Instance Name:</label>
+                <input type="text" id="instance-name" name="instance_name" required>
+                <button type="submit">Rent</button>
+            </form>
+        </section>
+        <section id="payment" style="display: none;">
+            <h2>Process Payment</h2>
+            <input type="hidden" id="instance-id" name="instance_id">
+            <input type="hidden" id="amount" name="amount" value="20.00">
+            <div id="paypal-button-container"></div>
+        </section>
+    </main>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
