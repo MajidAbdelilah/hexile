@@ -8,11 +8,15 @@ import logging
 from django.contrib.auth.decorators import login_required
 from .models import GhostInstance, Payment  # These are the correct models
 import docker
+from .utils import InstanceManager
+from django.conf import settings
 
 # Set your secret key. Remember to switch to your live secret key in production!
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+instance_manager = InstanceManager()
 
 def home(request):
     try:
@@ -84,9 +88,9 @@ def rent_ghost(request):
         try:
             instance_name = request.POST.get('instance_name')
             
-            # Find an available port (starting from 2369)
+            # Find available port
             used_ports = GhostInstance.objects.values_list('port', flat=True)
-            port = 2369
+            port = settings.GHOST_BASE_PORT + 1
             while port in used_ports:
                 port += 1
 
@@ -94,30 +98,32 @@ def rent_ghost(request):
             ghost_instance = GhostInstance.objects.create(
                 name=instance_name,
                 user=request.user,
-                port=port
+                port=port,
+                status='creating'
             )
 
-            # Create Docker container for Ghost instance
-            client = docker.from_env()
-            container = client.containers.run(
-                'ghost:latest',
-                name=f'ghost_{instance_name}',
-                ports={2368: port},
-                environment={
-                    'url': f'http://localhost:{port}'
-                },
-                detach=True
-            )
+            try:
+                # Create Docker container
+                container_id = instance_manager.create_instance(instance_name, port)
+                ghost_instance.container_id = container_id
+                ghost_instance.status = 'running'
+                ghost_instance.save()
 
-            return JsonResponse({
-                'message': 'Ghost instance rented successfully!',
-                'instance_url': f'http://localhost:{port}'
-            })
+                return JsonResponse({
+                    'message': 'Ghost instance created successfully!',
+                    'instance_id': ghost_instance.id,
+                    'instance_url': ghost_instance.get_url()
+                })
+            except Exception as e:
+                ghost_instance.status = 'error'
+                ghost_instance.error_message = str(e)
+                ghost_instance.save()
+                raise
+
         except Exception as e:
             logger.error(f"Error renting Ghost instance: {e}")
-            return JsonResponse({'error': 'Error renting Ghost instance.'}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 @csrf_exempt
 @login_required
@@ -154,3 +160,51 @@ def process_payment(request):
             return JsonResponse({'error': 'Error processing payment.'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@login_required
+def dashboard(request):
+    try:
+        instances = GhostInstance.objects.filter(user=request.user)
+        payments = Payment.objects.filter(user=request.user).order_by('-created_at')
+        return render(request, 'dashboard.html', {
+            'instances': instances,
+            'payments': payments
+        })
+    except Exception as e:
+        logger.error(f"Error loading dashboard: {e}")
+        return JsonResponse({'error': 'Error loading dashboard.'}, status=500)
+
+@csrf_exempt
+@login_required
+def delete_instance(request, instance_id):
+    if request.method == 'POST':
+        try:
+            instance = GhostInstance.objects.get(id=instance_id, user=request.user)
+            if instance.container_id:
+                instance_manager.delete_instance(instance.container_id)
+            instance.delete()
+            return JsonResponse({'message': 'Instance deleted successfully'})
+        except Exception as e:
+            logger.error(f"Error deleting instance: {e}")
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@login_required
+def check_instance_status(request, instance_id):
+    try:
+        instance = GhostInstance.objects.get(id=instance_id, user=request.user)
+        if instance.container_id:
+            status = instance_manager.check_instance_status(instance.container_id)
+            is_healthy = instance_manager.check_instance_health(instance.port)
+            
+            instance.status = 'running' if is_healthy else 'error'
+            instance.save()
+            
+            return JsonResponse({
+                'status': instance.status,
+                'is_healthy': is_healthy,
+                'last_checked': instance.last_checked
+            })
+    except Exception as e:
+        logger.error(f"Error checking instance status: {e}")
+        return JsonResponse({'error': str(e)}, status=500)

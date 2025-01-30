@@ -1,12 +1,23 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'mydatabase'),
+        'USER': os.environ.get('DB_USER', 'myuser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'mypassword'),
+        'HOST': os.environ.get('DB_HOST', 'postgres-db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -80,25 +91,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Remove STRIPE settings and add PayPal settings
-PAYPAL_CLIENT_ID = 'AY4CZZ1hhyDwYszHx-h28orO9RaGscf1qScWiePW-R-C3LsXKYSl6O-2oe-SMK5Rl6aVbcE4zqWi-00C'
-PAYPAL_CLIENT_SECRET = 'EJQUhBNU8bfy9okZtU39HFpUO97QHt-OyJ8fRJOAC1_UbR-ukeFyxH0Yr6YXM96fgEN9S2pKSI0umQU0'
-PAYPAL_SANDBOX = True  # Set to False in production
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
+PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
+PAYPAL_SANDBOX = os.getenv('PAYPAL_SANDBOX', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Add your allowed hosts here
-
-# Ensure DEBUG is set to True for development
-DEBUG = True
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SECRET_KEY = 'your_secret_key'  # Replace with your actual secret key
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'https://www.sandbox.paypal.com',
-    'https://www.paypal.com',
-]
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -123,10 +125,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-]
-
 # Add REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -138,3 +136,29 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = '/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'app': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

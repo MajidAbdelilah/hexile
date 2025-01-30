@@ -1,15 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 class GhostInstance(models.Model):
+    STATUS_CHOICES = [
+        ('creating', 'Creating'),
+        ('running', 'Running'),
+        ('stopped', 'Stopped'),
+        ('error', 'Error'),
+    ]
+
     name = models.CharField(max_length=100, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    last_checked = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='creating')
     is_active = models.BooleanField(default=True)
     port = models.IntegerField(unique=True)
+    container_id = models.CharField(max_length=100, blank=True, null=True)
+    error_message = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return f"{self.name} ({self.user.username})"
+
+    def get_url(self):
+        return f"http://localhost:{self.port}"
 
 class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

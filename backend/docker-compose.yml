@@ -1,0 +1,45 @@
+services:
+  django-backend:
+    build: .
+    volumes:
+      - .:/app
+      - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:rw
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres-db:
+    container_name: postgres-db
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

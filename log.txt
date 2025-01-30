@@ -1,0 +1,63 @@
+Attaching to django-backend, frontend, ghost-instance, postgres-db
+postgres-db     | 
+postgres-db     | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres-db     | 
+frontend        | 
+frontend        | > frontend@1.0.0 start /app
+frontend        | > node index.js
+frontend        | 
+frontend        | Frontend app listening at http://localhost:3000
+ghost-instance  | [2025-01-30 21:06:46] [36mINFO[39m Ghost is running in production...
+ghost-instance  | [2025-01-30 21:06:46] [36mINFO[39m Your site is now available on http://localhost:2368/
+ghost-instance  | [2025-01-30 21:06:46] [36mINFO[39m Ctrl+C to shut down
+ghost-instance  | [2025-01-30 21:06:46] [36mINFO[39m Ghost server started in 0.335s
+ghost-instance  | [2025-01-30 21:06:47] [36mINFO[39m Database is in a ready state.
+ghost-instance  | [2025-01-30 21:06:47] [36mINFO[39m Ghost database ready in 0.75s
+ghost-instance  | [2025-01-30 21:06:47] [35mWARN[39m Missing mail.from config, falling back to a generated email address. Please update your config file and set a valid from address
+ghost-instance  | [2025-01-30 21:06:48] [36mINFO[39m Invalidating assets for regeneration
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Adding offloaded job to the inline job queue
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Scheduling job mentions-email-report at 37 55 * * * *. Next run on: Thu Jan 30 2025 21:55:37 GMT+0000 (Coordinated Universal Time)
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Adding offloaded job to the inline job queue
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Scheduling job clean-expired-comped at 40 28 0 * * *. Next run on: Fri Jan 31 2025 00:28:40 GMT+0000 (Coordinated Universal Time)
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Adding offloaded job to the inline job queue
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Scheduling job clean-tokens at 42 5 19 * * *. Next run on: Fri Jan 31 2025 19:05:42 GMT+0000 (Coordinated Universal Time)
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Ghost booted in 4.528s
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Adding offloaded job to the inline job queue
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Scheduling job update-check at 44 12 1 * * *. Next run on: Fri Jan 31 2025 01:12:44 GMT+0000 (Coordinated Universal Time)
+ghost-instance  | [2025-01-30 21:06:50] [36mINFO[39m Running milestone emails job on Thu Jan 30 2025 21:06:50 GMT+0000 (Coordinated Universal Time)
+ghost-instance  | [2025-01-30 21:06:51] [36mINFO[39m Ghost URL Service Ready in 4.727s
+django-backend  | postgres-db:5432 - accepting connections
+django-backend  | Operations to perform:
+django-backend  |   Apply all migrations: admin, auth, authtoken, contenttypes, sessions
+django-backend  | Running migrations:
+django-backend  |   Applying contenttypes.0001_initial... OK
+django-backend  |   Applying auth.0001_initial... OK
+django-backend  |   Applying admin.0001_initial... OK
+django-backend  |   Applying admin.0002_logentry_remove_auto_add... OK
+django-backend  |   Applying admin.0003_logentry_add_action_flag_choices... OK
+django-backend  |   Applying contenttypes.0002_remove_content_type_name... OK
+django-backend  |   Applying auth.0002_alter_permission_name_max_length... OK
+django-backend  |   Applying auth.0003_alter_user_email_max_length... OK
+django-backend  |   Applying auth.0004_alter_user_username_opts... OK
+django-backend  |   Applying auth.0005_alter_user_last_login_null... OK
+django-backend  |   Applying auth.0006_require_contenttypes_0002... OK
+django-backend  |   Applying auth.0007_alter_validators_add_error_messages... OK
+django-backend  |   Applying auth.0008_alter_user_username_max_length... OK
+django-backend  |   Applying auth.0009_alter_user_last_name_max_length... OK
+django-backend  |   Applying auth.0010_alter_group_name_max_length... OK
+django-backend  |   Applying auth.0011_update_proxy_permissions... OK
+django-backend  |   Applying auth.0012_alter_user_first_name_max_length... OK
+django-backend  |   Applying authtoken.0001_initial... OK
+django-backend  |   Applying authtoken.0002_auto_20160226_1747... OK
+django-backend  |   Applying authtoken.0003_tokenproxy... OK
+django-backend  |   Applying sessions.0001_initial... OK
+django-backend  | Performing system checks...
+django-backend  | 
+django-backend  | System check identified no issues (0 silenced).
+django-backend  | January 30, 2025 - 21:06:55
+django-backend  | Django version 4.2, using settings 'app.settings'
+django-backend  | Starting development server at http://0.0.0.0:8000/
+django-backend  | Quit the server with CONTROL-C.
+django-backend  | 
+ghost-instance  | [2025-01-30 21:10:55] [36mINFO[39m [Recommendations] Updating recommendations metadata
+ghost-instance  | [2025-01-30 21:11:54] [36mINFO[39m Updating incoming recommendations on boot

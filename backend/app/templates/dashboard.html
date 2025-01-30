@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Ghost Instances</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav>
+        <h1>Dashboard</h1>
+        <div class="user-menu">
+            <span>Welcome, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    
+    <main>
+        <section class="instances">
+            <h2>Your Ghost Instances</h2>
+            <div class="instance-grid">
+                {% for instance in instances %}
+                <div class="instance-card">
+                    <h3>{{ instance.name }}</h3>
+                    <p>Status: {% if instance.is_active %}Active{% else %}Inactive{% endif %}</p>
+                    <p>URL: <a href="http://localhost:{{ instance.port }}" target="_blank">http://localhost:{{ instance.port }}</a></p>
+                    <button class="delete-instance" data-id="{{ instance.id }}">Delete Instance</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        
+        <section class="payments">
+            <h2>Payment History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Instance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>${{ payment.amount }}</td>
+                        <td>{{ payment.ghost_instance.name }}</td>
+                        <td>Completed</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
