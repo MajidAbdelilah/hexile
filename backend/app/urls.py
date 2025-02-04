@@ -2,6 +2,7 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
+from django.contrib import admin
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -16,4 +17,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('api/delete-instance/<int:instance_id>/', views.delete_instance, name='delete_instance'),
     path('api/instance/<int:instance_id>/status/', views.check_instance_status, name='check_instance_status'),
+    path('accounts/', include('allauth.urls')),
+    path('admin/', admin.site.urls),
 ]

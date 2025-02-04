@@ -17,7 +17,7 @@ chmod +x backend/wait-for-db.sh
 
 # Start postgres first
 echo "Starting PostgreSQL..."
-docker-compose up -d postgres-db
+docker-compose up --build -d postgres-db
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for database to be ready..."
@@ -30,4 +30,4 @@ echo "Database is ready!"
 
 # Start all services
 echo "Starting all services..."
-docker-compose up --remove-orphans
+docker-compose up --build --remove-orphans

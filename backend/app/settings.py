@@ -8,6 +8,8 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set in environment variables")
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 DATABASES = {
@@ -30,11 +32,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',  # Add your app here
     'rest_framework',
-    'corsheaders',
+    'corsheaders',  # added for CORS support
     'rest_framework.authtoken',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # add at the top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -43,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SITE_ID = 1
 
 ROOT_URLCONF = 'app.urls'
 
@@ -62,7 +71,30 @@ TEMPLATES = [
     },
 ]
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
 WSGI_APPLICATION = 'app.wsgi.application'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -162,3 +194,22 @@ LOGGING = {
         },
     },
 }
+
+# Allow frontend requests from localhost:3000
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# Ensure Django trusts CSRF from the frontend
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+# Allow cookies to be sent in cross-site requests
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = False  # Set to True in production if using HTTPS
+CSRF_COOKIE_SECURE = False     # Set to True in production if using HTTPS
+
+GHOST_BASE_PORT = 2400

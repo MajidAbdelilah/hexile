@@ -3,9 +3,9 @@ services:
     build: ./backend
     container_name: django-backend
     command: >
-      sh -c "./wait-for-db.sh postgres-db &&
-             python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      bash -c "python manage.py makemigrations app &&
+               python manage.py migrate &&
+               python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
       - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:rw
@@ -28,6 +28,8 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    ports:
+      - "8000:8000"
 
   postgres-db:
     container_name: postgres-db
